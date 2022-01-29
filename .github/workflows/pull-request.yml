@@ -11,6 +11,9 @@ on:
     branches:
       - main
 
+env:
+  IMAGE_NAME: ansible-goss
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -27,13 +30,11 @@ jobs:
     defaults:
       run:
         shell: bash
-    env:
-      IMAGE_NAME: ansible-goss
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Save image
-        run: docker save -o /tmp/${ env.IMAGE_NAME }}.tar ansible-goss_ansible:latest
+        run: docker save -o /tmp/${{ env.IMAGE_NAME }}.tar ansible-goss_ansible:latest
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
