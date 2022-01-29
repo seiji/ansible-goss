@@ -10,12 +10,13 @@ on:
   workflow_dispatch:
     branches:
       - main
-env:
-  IMAGE_NAME: ansible-goss
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -23,6 +24,11 @@ jobs:
         run: make lint
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    env:
+      IMAGE_NAME: ansible-goss
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
