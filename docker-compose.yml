@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  hadolint:
+    image: docker.io/hadolint/hadolint:v2.8.0-alpine
+    working_dir: /root/work
+    volumes:
+      - .:/root/work
+  ansible:
+    build: .
+    working_dir: /root/work
+    volumes:
+      - .:/root/work
