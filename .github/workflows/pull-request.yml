@@ -33,6 +33,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Build image
+        run: make build
       - name: Save image
         run: docker save -o /tmp/${{ env.IMAGE_NAME }}.tar ansible-goss_ansible:latest
       - name: Upload artifact
