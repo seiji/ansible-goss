@@ -8,6 +8,7 @@ services:
       - .:/root/work
   ansible:
     build: .
+    container_name: ansible-goss
     working_dir: /root/work
     volumes:
       - .:/root/work

@@ -36,9 +36,26 @@ jobs:
       - name: Build image
         run: make build
       - name: Save image
-        run: docker save -o /tmp/${{ env.IMAGE_NAME }}.tar ansible-goss_ansible:latest
+        run: docker save -o /tmp/${{ env.IMAGE_NAME }}.tar ${{ env.IMAGE_NAME }}:latest
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.IMAGE_NAME }}
           path: /tmp/${{ env.IMAGE_NAME }}.tar
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Fetch artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.IMAGE_NAME }}
+          path: /tmp
+      - name: Load image
+        run: docker load --input /tmp/${{ env.IMAGE_NAME }}.tar
+      - name: Run test
+        run: make test
