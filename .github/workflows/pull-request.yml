@@ -10,6 +10,9 @@ on:
   workflow_dispatch:
     branches:
       - main
+env:
+  IMAGE_NAME: ansible-goss
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -18,3 +21,15 @@ jobs:
         uses: actions/checkout@v2
       - name: Lint
         run: make lint
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Save image
+        run: docker save -o /tmp/${ env.IMAGE_NAME }}.tar ansible-goss_ansible:latest
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.IMAGE_NAME }}
+          path: /tmp/${{ env.IMAGE_NAME }}.tar
