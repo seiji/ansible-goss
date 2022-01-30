@@ -130,7 +130,7 @@ jobs:
       - uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with:
-            tag_name: ${{ steps.gittag.outputs.new_tag }}
-            release_name: ${{ env.TAG_NAME }}
-            body: "ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}\n${{ steps.ghcr.outputs.sha256 }}"
+        with:
+          tag_name: ${{ steps.gittag.outputs.new_tag }}
+          release_name: ${{ env.TAG_NAME }}
+          body: "ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}\n${{ steps.ghcr.outputs.sha256 }}"
