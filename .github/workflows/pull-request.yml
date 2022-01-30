@@ -12,7 +12,7 @@ on:
       - main
 
 env:
-  IMAGE_NAME: ansible-goss
+  IMAGE_NAME: localbuild/ansible-goss
 
 jobs:
   lint:
@@ -34,8 +34,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Build image
-        run: make build
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: build local container
+        uses: docker/build-push-action@v2
+        with:
+          tags: ${{ env.IMAGE_NAME }}:latest
+          push: false
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Save image
         run: docker save -o /tmp/${{ env.IMAGE_NAME }}.tar ${{ env.IMAGE_NAME }}:latest
       - name: Upload artifact
@@ -74,17 +82,15 @@ jobs:
         shell: bash
     needs: [build]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Fetch artifact
-        uses: actions/download-artifact@v2
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
         with:
           name: ${{ env.IMAGE_NAME }}
           path: /tmp
       - name: Load image
         run: docker load --input /tmp/${{ env.IMAGE_NAME }}.tar
       - name: Scan image
-        uses: anchore/scan-action@main
+        uses: anchore/scan-action@v3
         with:
           image: "${{ env.IMAGE_NAME }}:latest"
           acs-report-enable: true
