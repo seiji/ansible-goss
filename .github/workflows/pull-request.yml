@@ -61,9 +61,35 @@ jobs:
         run: docker load --input /tmp/${{ env.IMAGE_NAME }}.tar
       - name: Run test
         run: make test-jnit
-      - name: Report test
+      - name: Upload test report
         uses: mikepenz/action-junit-report@v2
         with:
           report_paths: 'goss-validate.xml'
           require_tests: true
           fail_on_failure: true
+  scan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    needs: [build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Fetch artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.IMAGE_NAME }}
+          path: /tmp
+      - name: Load image
+        run: docker load --input /tmp/${{ env.IMAGE_NAME }}.tar
+      - name: Scan image
+        uses: anchore/scan-action@main
+        with:
+          image: "${{ env.IMAGE_NAME }}:latest"
+          acs-report-enable: true
+      - name: Upload scan report
+        if: ${{ always() }}
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: results.sarif
